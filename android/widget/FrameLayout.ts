@@ -25,8 +25,10 @@ namespace android.widget {
         }
         
         onLayout(l: number, t: number, r: number, b: number, canvas: Canvas): void {
-            this.layoutInfo.reset(l, t, r, b, this.padding, 0);
+            // this.layoutInfo.reset(l, t, r, b, this.padding, 0);
+            super.onLayout(l,t,r,b,canvas);
             let viewItem: View;
+
 
             let length: number = this.children.length;
             for (var i = 0; i < length; ++i) {

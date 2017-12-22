@@ -43,6 +43,7 @@ namespace android.widget {
         }
 
         public dispatchDraw(canvas: Canvas): void {
+            console.log(" rootview dispatchDraw ======>>>");
             super.dispatchDraw(canvas);
             var rect = this.layoutInfo.outterrect;
             canvas.drawRect(rect.startPoint, rect.endPoint, false, this.background);
@@ -189,6 +190,7 @@ namespace android.widget {
             Device.width = element.clientWidth;
             Device.height = element.clientHeight;
             this.attachRender(new Canvas(element, renderType));
+            // this.setInfo(0, 0, element.clientWidth, element.clientHeight);
             this.setInfo(0, 0, element.clientWidth, element.clientHeight);
         }
 

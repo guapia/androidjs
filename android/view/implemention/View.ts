@@ -21,7 +21,7 @@ namespace android.view {
     import AnimationEase = android.view.animation.AnimationEase;
     import Style = android.graphics.Style;
     import Default = android.device.Default;
-    import AnimationState =android.view.animation.AnimationState;
+    import AnimationState = android.view.animation.AnimationState;
 
     // public static  VISIABLE :number= 1; 
     // public static  INVISIABLE :number = -1;
@@ -32,38 +32,38 @@ namespace android.view {
         Gone
     }
     export class View implements IView {
-        public id:string="";
+        public id: string = "";
         protected _width: MeasureSpec;
         protected _height: MeasureSpec;
         protected _background: Style;
         protected _padding: Padding = new Padding();
         public _layoutInfo: LayoutInfo;
         public _oldLayoutInfo: LayoutInfo;
-        public priority:number=0;
+        public priority: number = 0;
         protected _gravity: Gravity;
         protected alignView: AlignElment;
         layoutParams: LayoutParams = new LayoutParams(0, 0, null);
         private _parent: ViewGroup = null;
         private _context: Context;
         protected _canvas: Canvas;
-        protected _clip :boolean;
-        public animation:Animation;
-        private _animationList:Animation[];
-        private _drawingTime:number =0;
+        protected _clip: boolean;
+        public animation: Animation;
+        private _animationList: Animation[];
+        private _drawingTime: number = 0;
 
-        offsetleft: number=0;
-        offsettop: number=0;
+        offsetleft: number = 0;
+        offsettop: number = 0;
         public visiable: ViewState = ViewState.Visiable;
 
         constructor(context: Context) {
             this._context = context;
             this._gravity = Gravity.Left;
             this._background = Default.style;
-            this._background.background='transparent';
-            this._background.strokeStyle.strokeColor='transparent';
+            this._background.background = 'transparent';
+            this._background.strokeStyle.strokeColor = 'transparent';
             this._background.strokeStyle.strokeWidth = 0;
-            this.id = Math.random()*10000000+"";
-            this._animationList =[];
+            this.id = Math.random() * 10000000 + "";
+            this._animationList = [];
         }
         public getContext(): Context {
             return this._context;
@@ -89,24 +89,24 @@ namespace android.view {
             return size;
         }
 
-        public getDrawingTime():number{
-            if(this.parent != null){
+        public getDrawingTime(): number {
+            if (this.parent != null) {
                 return this._drawingTime;
-            }else{
+            } else {
                 return Date.now();
             }
         }
-        public setDrawingTime(value:number){
-            this._drawingTime=value;
+        public setDrawingTime(value: number) {
+            this._drawingTime = value;
         }
 
         onLayout(l: number, t: number, r: number, b: number, canvas: Canvas): void {
-            if(this.layoutInfo != null){
-                this._oldLayoutInfo= this.layoutInfo.clone();
+            this.layoutInfo.reset(l + this.offsetleft, t + this.offsettop, r + this.offsetleft, b + this.offsettop, this.padding, 0);
+            if (this.layoutInfo != null) {
+                this._oldLayoutInfo = this.layoutInfo.clone();
             }
-            this.layoutInfo.reset(l+this.offsetleft, t+this.offsettop, r+this.offsetleft, b+this.offsettop, this.padding, 0);
         }
-        protected islayoutChanged():boolean{
+        protected islayoutChanged(): boolean {
             return !this.layoutInfo.equal(this._oldLayoutInfo);
         }
         onDraw(canvas: Canvas): void {
@@ -128,26 +128,29 @@ namespace android.view {
             return false;
         }
 
-        public invalidate(force:boolean): void {
+        public invalidate(force: boolean): void {
             force = true;
-            if(force){
+            if (force) {
                 if (this.parent) {
                     this.parent.invalidate(force);
                 } else {
                     this.oninvalidate();
                 }
-            }else{
-                this.parent.invalidateChild(this,this.layoutInfo.outterrect);
+            } else {
+                this.parent.invalidateChild(this, this.layoutInfo.outterrect);
                 this.oninvalidate();
             }
         }
-        
+
         public getRootView(): View {
-            if(this.parent != null){
+            if (this.parent != null) {
                 let parent = this.parent;
-                do {
+                // do {
+                //     parent = parent.parent;
+                // } while (parent.parent != null)
+                while (parent.parent != null) {
                     parent = parent.parent;
-                } while (parent.parent != null)
+                }
                 return parent;
             }
             return this;
@@ -163,38 +166,38 @@ namespace android.view {
         }
 
 
-        public startAnimation(animation:Animation){
-            if(this.animation == null ||this.animation.isAniamtionEnd){
+        public startAnimation(animation: Animation) {
+            if (this.animation == null || this.animation.isAniamtionEnd) {
                 this.animation = animation;
-                if(this.animation != null){
+                if (this.animation != null) {
                     this.getRootView().startAnimation(animation);
                 }
-                this.animation.__onInneranimationEnd= (canvas:Canvas,view:View)=>{
-                    if(this.animation.repeate){
+                this.animation.__onInneranimationEnd = (canvas: Canvas, view: View) => {
+                    if (this.animation.repeate) {
                         this.animation.start = 0;
                         this.animation.state = AnimationState.BeforeStart;
                         this.startAnimation(this.animation);
-                    }                    
-                }                
-                
-            }else{
+                    }
+                }
+
+            } else {
                 this._animationList.push(animation);
-                this.animation.__onInneranimationEnd= (canvas:Canvas,view:View)=>{
-                    if(this._animationList.length>0){
+                this.animation.__onInneranimationEnd = (canvas: Canvas, view: View) => {
+                    if (this._animationList.length > 0) {
                         let curranimation = this._animationList.pop();
                         this.startAnimation(curranimation);
                     }
-                    
+
                 }
             }
         }
-        
-        public cleanAnimation(){
-            if(this.animation != null){
+
+        public cleanAnimation() {
+            if (this.animation != null) {
                 this.animation.repeate = false;
                 this.animation.state = AnimationState.End;
             }
-            this._animationList.length=0;
+            this._animationList.length = 0;
         }
         public setParent(p: ViewGroup) {
             this._parent = p;
@@ -202,7 +205,7 @@ namespace android.view {
         public offset(left: number, top: number) {
             this.offsetleft += left;
             this.offsettop += top;
-            if(isNaN(left) || isNaN(this.offsetleft)){
+            if (isNaN(left) || isNaN(this.offsetleft)) {
                 console.log("offset error");
                 throw "offset error ";
             }
@@ -262,10 +265,10 @@ namespace android.view {
         get gravity(): Gravity {
             return this._gravity;
         }
-        set clip(value:boolean){
+        set clip(value: boolean) {
             this._clip = value;
         }
-        get clip():boolean{
+        get clip(): boolean {
             return this._clip;
         }
     }

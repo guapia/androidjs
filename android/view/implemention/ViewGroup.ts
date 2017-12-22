@@ -179,7 +179,7 @@ namespace android.view {
             // this.children.sort((a: View, b: View) => {
             //     return a.priority - b.priority;
             // });
-            this.notifyDrawOrderChanged();
+            // this.notifyDrawOrderChanged();
             if (index !== undefined && index !== null && index >= 0) {
                 view.layoutInfo.drawindex = index;
             } else {

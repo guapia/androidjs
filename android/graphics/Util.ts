@@ -123,13 +123,20 @@ namespace android.graphics {
     export class RadialGradient extends Gradient {
         public centerx:number;
         public centery:number;
-        public end:number
-
-        constructor(cx:number,cy:number,end:number,colors:{offset:number,color:string}[]){
+        public radius:number
+        
+        public centerx1:number;
+        public centery1:number;
+        public radius1:number;
+        constructor(cx:number,cy:number,r:number,cx1:number,cy1:number,r1:number,colors:{offset:number,color:string}[]){
             super(colors);
             this.centerx =cx;
             this.centery = cy;
-            this.end = end;
+            this.radius = r;
+            this.centerx1 =cx1;
+            this.centery1 = cy1;
+            this.radius1 = r1;
+            
         }
     }
 
@@ -141,8 +148,8 @@ namespace android.graphics {
     }
 
     export class FillStyle {
-        private fill: Gradient | string;
-        private shadow: Shadow;
+        public fill: Gradient | string;
+        public shadow: Shadow;
         constructor() {
             this.fill = 'transparent';
         }

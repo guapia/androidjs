@@ -23,21 +23,21 @@ module android.graphics {
             this._create();
 
         }
-        get canvas():CanvasRenderingContext2D{
+        get canvas(): CanvasRenderingContext2D {
             return this._canvas2d;
         }
 
         public set alpha(value: number) {
             this._canvas2d.globalAlpha = value;
         }
-        clearRect(left:number,top:number,width:number,height:number){
-            this._canvas2d.clearRect(left,top,width,height);
+        clearRect(left: number, top: number, width: number, height: number) {
+            this._canvas2d.clearRect(left, top, width, height);
         }
 
         beginRender() {
             this._canvas2d.clearRect(0, 0, this._canvas.width, this._canvas.height);
         }
-        
+
         endRender() {
         }
 
@@ -83,9 +83,25 @@ module android.graphics {
 
         private _applyStyle(style: Style) {
             if (style != null) {
-                if (style.background instanceof Gradient) {
 
-                } else if (typeof (style.background) == 'string') {
+                if (style.background instanceof FillStyle) {
+                    if (style.background.fill instanceof Gradient) {
+                        let gradient: any = null;
+                        let fill = style.background.fill;
+                        if (fill instanceof LinearGradient) {
+                            gradient = this._canvas2d.createLinearGradient(fill.startx, fill.starty, fill.endx, fill.endy);
+                        } else if (fill instanceof RadialGradient) {
+                            gradient = this._canvas2d.createRadialGradient(fill.centerx, fill.centery, fill.radius, fill.centerx1, fill.centery1, fill.radius1);
+                        }
+                        if (gradient != null) {
+                            for (let colorinfo of fill.colors) {
+                                gradient.addColorStop(colorinfo.offset, colorinfo.color);
+                            }
+                        }
+                        this._canvas2d.fillStyle = gradient;
+                    }
+                }
+                else if (typeof (style.background) == 'string') {
                     this._canvas2d.fillStyle = style.background;
                 }
                 this._applyStrokeStyle(style.strokeStyle);
@@ -130,9 +146,9 @@ module android.graphics {
             } else {
                 this._canvas2d.strokeRect(x, y, w, h);
             }
-            if(style.strokeStyle != null){
+            if (style.strokeStyle != null) {
                 // this._canvas2d.stroke();
-            }    
+            }
             this._canvas2d.restore();
         }
 
@@ -170,7 +186,7 @@ module android.graphics {
             }
             this._canvas2d.closePath();
             this._canvas2d.fill();
-            if(style.strokeStyle != null){
+            if (style.strokeStyle != null) {
                 this._canvas2d.stroke();
             }
             this._canvas2d.restore();
@@ -191,7 +207,7 @@ module android.graphics {
         }
 
 
-        drawDonut(cx: number, cy: number, radius: number, innerRadius: number, startAngle: number, sweepAngle: number, style:Style) {
+        drawDonut(cx: number, cy: number, radius: number, innerRadius: number, startAngle: number, sweepAngle: number, style: Style) {
             let endAngle: number = startAngle + sweepAngle;
             let p1 = new Point(cx, cy);
             p1.x += innerRadius * Math.cos(startAngle);
